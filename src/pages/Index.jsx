@@ -7,6 +7,9 @@ const Index = () => {
   const [tasks, setTasks] = useState([]);
   const [selectedTask, setSelectedTask] = useState(null);
   const { isOpen, onOpen, onClose } = useDisclosure();
+  const [filterImportance, setFilterImportance] = useState("");
+  const [filterDay, setFilterDay] = useState("");
+  const [filterCategory, setFilterCategory] = useState("");
 
   const handleCreateTask = (event) => {
     event.preventDefault();
@@ -82,6 +85,28 @@ const Index = () => {
 
         {/* Main Content Area */}
         <Box as="main" flex="1" padding="4">
+          <Flex mb="4" justifyContent="space-between">
+            <FormControl width="30%">
+              <FormLabel>Filter by Importance</FormLabel>
+              <Select placeholder="All" onChange={(e) => setFilterImportance(e.target.value)}>
+                <option value="high">High</option>
+                <option value="medium">Medium</option>
+                <option value="low">Low</option>
+              </Select>
+            </FormControl>
+            <FormControl width="30%">
+              <FormLabel>Filter by Day</FormLabel>
+              <Input type="date" onChange={(e) => setFilterDay(e.target.value)} />
+            </FormControl>
+            <FormControl width="30%">
+              <FormLabel>Filter by Category</FormLabel>
+              <Select placeholder="All" onChange={(e) => setFilterCategory(e.target.value)}>
+                <option value="personal">Personal</option>
+                <option value="work">Work</option>
+                <option value="shopping">Shopping</option>
+              </Select>
+            </FormControl>
+          </Flex>
           <Tabs>
             <TabList>
               <Tab>Today Task</Tab>
@@ -92,7 +117,16 @@ const Index = () => {
             <TabPanels>
               <TabPanel>
                 <VStack align="start" spacing="4">
-                  {tasks.filter(task => new Date(task.scheduledTime).toDateString() === new Date().toDateString()).map((task, index) => (
+                  {tasks.filter(task => new Date(task.scheduledTime).toDateString() === new Date().toDateString())
+                    .filter(task => {
+                      const taskDate = new Date(task.scheduledTime).toDateString();
+                      const filterDate = new Date(filterDay).toDateString();
+                      return (
+                        (filterImportance === "" || task.importance === filterImportance) &&
+                        (filterDay === "" || taskDate === filterDate) &&
+                        (filterCategory === "" || task.category === filterCategory)
+                      );
+                    }).map((task, index) => (
                     <Box
                       key={index}
                       borderWidth="1px"
@@ -117,7 +151,15 @@ const Index = () => {
               </TabPanel>
               <TabPanel>
                 <VStack align="start" spacing="4">
-                  {tasks.map((task, index) => (
+                  {tasks.filter(task => {
+                      const taskDate = new Date(task.scheduledTime).toDateString();
+                      const filterDate = new Date(filterDay).toDateString();
+                      return (
+                        (filterImportance === "" || task.importance === filterImportance) &&
+                        (filterDay === "" || taskDate === filterDate) &&
+                        (filterCategory === "" || task.category === filterCategory)
+                      );
+                    }).map((task, index) => (
                     <Box
                       key={index}
                       borderWidth="1px"
