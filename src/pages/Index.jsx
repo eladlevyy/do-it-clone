@@ -1,8 +1,24 @@
 import { Box, Flex, Heading, VStack, Text, IconButton, useColorMode, Tabs, TabList, TabPanels, Tab, TabPanel, FormControl, FormLabel, Input, Select, Button } from "@chakra-ui/react";
 import { FaSun, FaMoon, FaTasks } from "react-icons/fa";
+import { useState } from "react";
 
 const Index = () => {
   const { colorMode, toggleColorMode } = useColorMode();
+  const [tasks, setTasks] = useState([]);
+
+  const handleCreateTask = (event) => {
+    event.preventDefault();
+    const form = event.target;
+    const newTask = {
+      name: form["task-name"].value,
+      importance: form["importance"].value,
+      scheduledTime: form["scheduled-time"].value,
+      estimatedTime: form["estimated-time"].value,
+      category: form["category"].value,
+    };
+    setTasks([...tasks, newTask]);
+    form.reset();
+  };
 
   return (
     <Flex height="100vh" flexDirection="column">
@@ -48,20 +64,20 @@ const Index = () => {
             <TabPanels>
               <TabPanel>
                 <VStack align="start" spacing="4">
-                  <Text>Today's Task 1</Text>
-                  <Text>Today's Task 2</Text>
-                  <Text>Today's Task 3</Text>
+                  {tasks.filter(task => new Date(task.scheduledTime).toDateString() === new Date().toDateString()).map((task, index) => (
+                    <Text key={index}>{task.name}</Text>
+                  ))}
                 </VStack>
               </TabPanel>
               <TabPanel>
                 <VStack align="start" spacing="4">
-                  <Text>All Task 1</Text>
-                  <Text>All Task 2</Text>
-                  <Text>All Task 3</Text>
+                  {tasks.map((task, index) => (
+                    <Text key={index}>{task.name}</Text>
+                  ))}
                 </VStack>
               </TabPanel>
               <TabPanel>
-                <VStack align="start" spacing="4" as="form">
+                <VStack align="start" spacing="4" as="form" onSubmit={handleCreateTask}>
                   <FormControl id="task-name" isRequired>
                     <FormLabel>Task Name</FormLabel>
                     <Input placeholder="Enter task name" />
