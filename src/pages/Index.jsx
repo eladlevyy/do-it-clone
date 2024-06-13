@@ -1,5 +1,5 @@
 import { Box, Flex, Heading, VStack, Text, IconButton, useColorMode, Tabs, TabList, TabPanels, Tab, TabPanel, FormControl, FormLabel, Input, Select, Button, Modal, ModalOverlay, ModalContent, ModalHeader, ModalFooter, ModalBody, ModalCloseButton, useDisclosure, Checkbox } from "@chakra-ui/react";
-import { FaSun, FaMoon, FaTasks, FaEdit, FaTrash } from "react-icons/fa";
+import { FaSun, FaMoon, FaTasks, FaEdit, FaTrash, FaTimes } from "react-icons/fa"; // Import FaTimes icon
 import { useState } from "react";
 
 const Index = () => {
@@ -133,6 +133,7 @@ const Index = () => {
               <Tab>Today Task</Tab>
               <Tab>All Task</Tab>
               <Tab>Create Task</Tab>
+              <Tab>DONE tasks</Tab> {/* Add DONE tasks tab */}
             </TabList>
 
             <TabPanels>
@@ -264,6 +265,34 @@ const Index = () => {
                     <Input type="datetime-local" />
                   </FormControl>
                   <Button colorScheme="blue" type="submit">Create Task</Button>
+                </VStack>
+              </TabPanel>
+              <TabPanel>
+                <VStack align="start" spacing="4">
+                  {tasks.filter(task => taskCompletion[task.id]).map((task, index) => (
+                    <Box
+                      key={index}
+                      borderWidth="1px"
+                      borderRadius="lg"
+                      overflow="hidden"
+                      p="4"
+                      mb="4"
+                      bg={task.importance === 'high' ? '#E19093' : task.importance === 'medium' ? '#FFE0BD' : '#D9EAD3'}
+                    >
+                      <Text fontWeight="bold">{task.name}</Text>
+                      <Text>Importance: {task.importance}</Text>
+                      <Text>Scheduled Time: {new Date(task.scheduledTime).toLocaleString()}</Text>
+                      <Text>Estimated Time: {task.estimatedTime} hours</Text>
+                      <Text>Category: {task.category}</Text>
+                      <Text>Free Text: {task.freeText}</Text>
+                      <Text>Completion Status: Done</Text>
+                      <Text>Notes: {taskNotes[task.id]}</Text>
+                      <Text>Next Check Date: {taskNextDate[task.id]}</Text>
+                      <Flex mt="2">
+                        <IconButton aria-label="Task done" icon={<FaTimes />} /> {/* Display X icon */}
+                      </Flex>
+                    </Box>
+                  ))}
                 </VStack>
               </TabPanel>
             </TabPanels>
