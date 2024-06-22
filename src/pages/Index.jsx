@@ -33,6 +33,34 @@ const Index = () => {
     form.reset();
   };
 
+  import { createKysely } from "@vercel/postgres-kysely";
+
+interface Database {
+  person: PersonTable; // see github.com/kysely-org/kysely
+  pet: PetTable;
+  movie: MovieTable;
+}
+
+const db = createKysely<Database>();
+
+const person = await db
+  .selectFrom('person')
+  .innerJoin('pet', 'pet.owner_id', 'person.id')
+  .select(['first_name', 'pet.name as pet_name'])
+  .where('person.id', '=', id)
+  .executeTakeFirst();
+useEffect(() => {
+    const savedTasks = JSON.parse(localStorage.getItem("tasks"));
+    if (savedTasks) {
+      setTasks(savedTasks);
+    }
+  }, []);
+
+  useEffect(() => {
+    localStorage.setItem("tasks", JSON.stringify(tasks));
+  }, [tasks]);
+
+  
   const handleUpdateTask = (event) => {
     event.preventDefault();
     const form = event.target;
